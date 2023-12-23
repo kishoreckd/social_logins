@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:social/pages/user.dart';
+import 'package:social/pages/login.dart';
 import 'package:social/pages/forgot.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // ignore_for_file: avoid_print
@@ -24,44 +25,72 @@ class _SignUpState extends State<SignUp> {
   final passwordController = TextEditingController();
   final confirmpasswordController = TextEditingController();
 
-  // userLogin() async {
-  //   try {
-  //     await FirebaseAuth.instance
-  //         .signInWithEmailAndPassword(email: email, password: password);
+  userRegistration() async {
+    if (password == confirmpassword) {
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: email, password: password);
+        print(userCredential);
 
-  //     Navigator.pushReplacement(
-  //         context, MaterialPageRoute(builder: (context) => const UserMain()));
-  //   } on FirebaseAuthException catch (e) {
-  //     if (e.code == 'user-not-found') {
-  //       print('No user found in that email');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.blueGrey,
+            content: Text(
+              'Registered Successfully , please LogIn',
+              style: TextStyle(fontSize: 18),
+            ),
+          ),
+        );
 
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(
-  //           content: Text(
-  //             'No user found in that email',
-  //             style: TextStyle(fontSize: 18, color: Colors.red),
-  //           ),
-  //         ),
-  //       );
-  //     } else if (e.code == 'wrong-password') {
-  //       print('wrong password');
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const LoginPage()));
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          print('password is too weak');
 
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(
-  //           content: Text(
-  //             'Wrong password provided by the user',
-  //             style: TextStyle(fontSize: 18, color: Colors.red),
-  //           ),
-  //         ),
-  //       );
-  //     }
-  //   }
-  // }
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.blueGrey,
+              content: Text(
+                'Password is too weak',
+                style: TextStyle(fontSize: 18, color: Colors.red),
+              ),
+            ),
+          );
+        } else if (e.code == 'email-already-in-use') {
+          print('Account already exists');
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.blueGrey,
+              content: Text(
+                'Email already exists',
+                style: TextStyle(fontSize: 18, color: Colors.red),
+              ),
+            ),
+          );
+        }
+      }
+    } else {
+      print('Password and confirm Password does not match');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.blueGrey,
+          content: Text(
+            'Password and confirm Password does not match',
+            style: TextStyle(fontSize: 18, color: Colors.red),
+          ),
+        ),
+      );
+    }
+  }
 
   @override
   void dispose() {
-    // emailController.dispose();
-    // passwordController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmpasswordController.dispose();
     super.dispose();
   }
 
@@ -101,6 +130,7 @@ class _SignUpState extends State<SignUp> {
               margin: const EdgeInsets.symmetric(vertical: 10),
               child: TextFormField(
                 autofocus: false,
+                obscureText: true,
                 decoration: const InputDecoration(
                   labelText: 'Password',
                   labelStyle: TextStyle(fontSize: 20),
@@ -120,6 +150,7 @@ class _SignUpState extends State<SignUp> {
               margin: const EdgeInsets.symmetric(vertical: 10),
               child: TextFormField(
                 autofocus: false,
+                obscureText: true,
                 decoration: const InputDecoration(
                   labelText: 'Confirm Password',
                   labelStyle: TextStyle(fontSize: 20),
@@ -144,13 +175,15 @@ class _SignUpState extends State<SignUp> {
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 ElevatedButton(
                   onPressed: () {
-                    // if (_formKey.currentState!.validate()) {
-                    //   setState(() {
-                    //     email = emailController.text;
-                    //     password = passwordController.text;
-                    //   });
-                    //   userLogin();
-                    // }
+                    if (_formKey.currentState!.validate()) {
+                      setState(() {
+                        email = emailController.text;
+                        password = passwordController.text;
+                        confirmpassword = confirmpasswordController.text;
+                      });
+                      userRegistration();
+                    }
+
                   },
                   child: const Text(
                     'Sign Up',
@@ -172,11 +205,11 @@ class _SignUpState extends State<SignUp> {
                       Navigator.pushReplacement(
                           context,
                           PageRouteBuilder(
-                            pageBuilder: (context, a, b) => const SignUp(),
+                            pageBuilder: (context, a, b) => const LoginPage(),
                             transitionDuration: Duration(seconds: 0),
                           ));
                     },
-                    child: const Text('Sign Up'),
+                    child: const Text('Log In'),
                   )
                 ],
               ),

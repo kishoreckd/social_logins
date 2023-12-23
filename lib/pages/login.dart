@@ -100,6 +100,7 @@ class _LoginPageState extends State<LoginPage> {
               margin: const EdgeInsets.symmetric(vertical: 10),
               child: TextFormField(
                 autofocus: false,
+                obscureText: true,
                 decoration: const InputDecoration(
                   labelText: 'Password',
                   labelStyle: TextStyle(fontSize: 20),
@@ -149,24 +150,22 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ]),
             ),
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('do not have an account? '),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                          context,
-                          PageRouteBuilder(
-                            pageBuilder: (context, a, b) => const SignUp(),
-                            transitionDuration: Duration(seconds: 0),
-                          ));
-                    },
-                    child: const Text('Sign Up'),
-                  )
-                ],
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('do not have an account? '),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder: (context, a, b) => const SignUp(),
+                          transitionDuration: const Duration(seconds: 0),
+                        ));
+                  },
+                  child: const Text('Sign Up'),
+                )
+              ],
             )
           ],
         ),
